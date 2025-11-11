@@ -106,6 +106,9 @@
 
         async function mainLiff() {
             const statusMessage = document.getElementById('status-message');
+            statusMessage.textContent = 'Initializing LIFF...'; // Loading message
+            statusMessage.className = 'text-center mt-4 text-gray-600 font-semibold text-lg'; // Set to neutral color
+
             try {
                 // 3. Initialize LIFF
                 // =================================================================
@@ -114,13 +117,23 @@
                 // =================================================================
                 await liff.init({ liffId: '2007784462-bVgEReNG' });
                 
+                // After init, check if we're in LINE
+                if (!liff.isInClient()) {
+                    statusMessage.textContent = 'Ready (Testing in browser). Buttons will not work.';
+                    statusMessage.className = 'text-center mt-4 text-blue-600 font-semibold text-lg';
+                } else {
+                    statusMessage.textContent = 'LIFF Ready.';
+                    statusMessage.className = 'text-center mt-4 text-green-600 font-semibold text-lg';
+                }
+                
                 // After init, set up button listeners
                 setupButtonListeners();
 
             } catch (error) {
                 console.error('LIFF Initialization failed:', error);
-                // Show error message on the page instead of alert
-                statusMessage.textContent = 'ไม่สามารถโหลดแอปได้ กรุณาลองใหม่อีกครั้งใน LINE';
+                // Show error message on the page
+                statusMessage.textContent = 'LIFF Initialization Failed. Check LIFF ID and console.';
+                statusMessage.className = 'text-center mt-4 text-red-600 font-semibold text-lg';
             }
         }
 
@@ -129,7 +142,7 @@
 
             // 4. Red Button: Open another LIFF window
             document.getElementById('openLiffButton').addEventListener('click', () => {
-                statusMessage.textContent = ''; // Clear previous messages
+                
                 if (liff.isInClient()) {
                     // =================================================================
                     // !!! IMPORTANT !!!
@@ -144,39 +157,32 @@
                 } else {
                     // Fallback for testing in a normal browser
                     console.log('Not in LIFF client. Would open: ' + dummyLiffUrl);
-                    statusMessage.textContent = 'This button only works inside the LINE app.';
+                    statusMessage.textContent = 'Error: Must be run inside the LINE app to open LIFF window.';
+                    statusMessage.className = 'text-center mt-4 text-red-600 font-semibold text-lg';
                 }
             });
 
             // 5. Gray Button: Send a carousel message and close the LIFF app
             document.getElementById('closeAndSendButton').addEventListener('click', async () => {
-                statusMessage.textContent = ''; // Clear previous messages
-                if (liff.isInClient() && liff.isApiAvailable('sendMessages')) {
+                
+                const inClient = liff.isInClient();
+                const apiAvailable = liff.isApiAvailable('sendMessages');
+                
+                console.log(`isInClient: ${inClient}, isApiAvailable('sendMessages'): ${apiAvailable}`);
+
+                if (inClient && apiAvailable) {
                     try {
+                        statusMessage.textContent = 'Sending message...';
+                        statusMessage.className = 'text-center mt-4 text-blue-600 font-semibold text-lg';
+
                         // Define the carousel message
                         const carouselMessage = {
                             "type": "flex",
-                            "altText": "ผลิตภัณฑ์แนะนำ",
-                            "contents": {
-                                "type": "carousel",
+// ... existing code ... -->
                                 "contents": [
                                     {
                                         "type": "bubble",
-                                        "hero": {
-                                            "type": "image",
-                                            "url": "https://placehold.co/600x400/84CC16/333333?text=การออม&font=kanit",
-                                            "size": "full",
-                                            "aspectRatio": "20:13",
-                                            "aspectMode": "cover"
-                                        },
-                                        "body": {
-                                            "type": "box",
-                                            "layout": "vertical",
-                                            "contents": [
-                                                { "type": "text", "text": "แผนการออม", "weight": "bold", "size": "xl" },
-                                                { "type": "text", "text": "เริ่มต้นสร้างความมั่นคง", "wrap": true }
-                                            ]
-                                        },
+// ... existing code ... -->
                                         "footer": {
                                             "type": "box",
                                             "layout": "vertical",
@@ -187,21 +193,7 @@
                                     },
                                     {
                                         "type": "bubble",
-                                        "hero": {
-                                            "type": "image",
-                                            "url": "https://placehold.co/600x400/A3E635/333333?text=สุขภาพ&font=kanit",
-                                            "size": "full",
-                                            "aspectRatio": "20:13",
-                                            "aspectMode": "cover"
-                                        },
-                                        "body": {
-                                            "type": "box",
-                                            "layout": "vertical",
-                                            "contents": [
-                                                { "type": "text", "text": "แผนสุขภาพ", "weight": "bold", "size": "xl" },
-                                                { "type": "text", "text": "ครอบคลุมค่ารักษาพยาบาล", "wrap": true }
-                                            ]
-                                        },
+// ... existing code ... -->
                                         "footer": {
                                             "type": "box",
                                             "layout": "vertical",
@@ -223,13 +215,15 @@
                     } catch (error) {
                         console.error('Failed to send message:', error);
                         statusMessage.textContent = 'ไม่สามารถส่งข้อความได้';
+                        statusMessage.className = 'text-center mt-4 text-red-600 font-semibold text-lg';
                         // Still close the window even if sending fails, after a short delay
                         setTimeout(() => liff.closeWindow(), 2000); // Wait 2s to show error
                     }
                 } else {
-                    // Fallback for testing in a normal browser
+                    // Fallback for testing in a normal browser or if API is missing
                     console.log('Not in LIFF client or API not available. Would close window now.');
-                    statusMessage.textContent = 'This button only works inside the LINE app.';
+                    statusMessage.textContent = 'Error: Must be run inside the LINE app to send messages.';
+                    statusMessage.className = 'text-center mt-4 text-red-600 font-semibold text-lg';
                 }
             });
         }
