@@ -175,14 +175,31 @@
                         statusMessage.textContent = 'Sending message...';
                         statusMessage.className = 'text-center mt-4 text-blue-600 font-semibold text-lg';
 
-                        // Define the carousel message
+                        // --- FIX STARTS HERE ---
+                        // Define the complete carousel message
                         const carouselMessage = {
                             "type": "flex",
-// ... existing code ... -->
+                            "altText": "ผลิตภัณฑ์แนะนำ",
+                            "contents": {
+                                "type": "carousel",
                                 "contents": [
                                     {
                                         "type": "bubble",
-// ... existing code ... -->
+                                        "hero": {
+                                            "type": "image",
+                                            "url": "https://placehold.co/600x400/84CC16/333333?text=การออม&font=kanit",
+                                            "size": "full",
+                                            "aspectRatio": "20:13",
+                                            "aspectMode": "cover"
+                                        },
+                                        "body": {
+                                            "type": "box",
+                                            "layout": "vertical",
+                                            "contents": [
+                                                { "type": "text", "text": "แผนการออม", "weight": "bold", "size": "xl" },
+                                                { "type": "text", "text": "เริ่มต้นสร้างความมั่นคง", "wrap": true }
+                                            ]
+                                        },
                                         "footer": {
                                             "type": "box",
                                             "layout": "vertical",
@@ -193,7 +210,21 @@
                                     },
                                     {
                                         "type": "bubble",
-// ... existing code ... -->
+                                        "hero": {
+                                            "type": "image",
+                                            "url": "https://placehold.co/600x400/A3E635/333333?text=สุขภาพ&font=kanit",
+                                            "size": "full",
+                                            "aspectRatio": "20:13",
+                                            "aspectMode": "cover"
+                                        },
+                                        "body": {
+                                            "type": "box",
+                                            "layout": "vertical",
+                                            "contents": [
+                                                { "type": "text", "text": "แผนสุขภาพ", "weight": "bold", "size": "xl" },
+                                                { "type": "text", "text": "ครอบคลุมค่ารักษาพยาบาล", "wrap": true }
+                                            ]
+                                        },
                                         "footer": {
                                             "type": "box",
                                             "layout": "vertical",
@@ -205,6 +236,7 @@
                                 ]
                             }
                         };
+                        // --- FIX ENDS HERE ---
 
                         // Send the message
                         await liff.sendMessages([carouselMessage]);
