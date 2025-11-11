@@ -75,7 +75,7 @@
         </div>
 
         <!-- Action Buttons Section -->
-        <div classs="px-4">
+        <div class="px-4"> <!-- Corrected class attribute -->
             <!-- Red Button -->
             <button id="openLiffButton" class="w-full bg-[#E11D48] text-white text-xl font-bold py-4 px-6 rounded-lg shadow-lg hover:bg-[#BE123C] transition duration-300">
                 สนใจให้ติดต่อกลับ
@@ -89,18 +89,23 @@
                 </svg>
                 <span>ข้ามไปผลิตภัณฑ์แนะนำเบื้องต้น</span>
             </button>
+
+            <!-- Status Message Area -->
+            <div id="status-message" class="text-center mt-4 text-red-600 font-semibold text-lg"></div>
+
         </div>
     </div>
 
     <script>
         // --- LIFF SCRIPT ---
-
+        
         // Wait for the window to load before running LIFF functions
         window.onload = function() {
             mainLiff();
         };
 
         async function mainLiff() {
+            const statusMessage = document.getElementById('status-message');
             try {
                 // 3. Initialize LIFF
                 // =================================================================
@@ -114,14 +119,17 @@
 
             } catch (error) {
                 console.error('LIFF Initialization failed:', error);
-                // You could show an error message to the user here
-                alert('ไม่สามารถโหลดแอปได้ กรุณาลองใหม่อีกครั้งใน LINE');
+                // Show error message on the page instead of alert
+                statusMessage.textContent = 'ไม่สามารถโหลดแอปได้ กรุณาลองใหม่อีกครั้งใน LINE';
             }
         }
 
         function setupButtonListeners() {
+            const statusMessage = document.getElementById('status-message');
+
             // 4. Red Button: Open another LIFF window
             document.getElementById('openLiffButton').addEventListener('click', () => {
+                statusMessage.textContent = ''; // Clear previous messages
                 if (liff.isInClient()) {
                     // =================================================================
                     // !!! IMPORTANT !!!
@@ -136,12 +144,13 @@
                 } else {
                     // Fallback for testing in a normal browser
                     console.log('Not in LIFF client. Would open: ' + dummyLiffUrl);
-                    alert('This button opens another LIFF app.');
+                    statusMessage.textContent = 'This button only works inside the LINE app.';
                 }
             });
 
             // 5. Gray Button: Send a carousel message and close the LIFF app
             document.getElementById('closeAndSendButton').addEventListener('click', async () => {
+                statusMessage.textContent = ''; // Clear previous messages
                 if (liff.isInClient() && liff.isApiAvailable('sendMessages')) {
                     try {
                         // Define the carousel message
@@ -213,14 +222,14 @@
 
                     } catch (error) {
                         console.error('Failed to send message:', error);
-                        alert('ไม่สามารถส่งข้อความได้');
-                        // Still close the window even if sending fails
-                        liff.closeWindow();
+                        statusMessage.textContent = 'ไม่สามารถส่งข้อความได้';
+                        // Still close the window even if sending fails, after a short delay
+                        setTimeout(() => liff.closeWindow(), 2000); // Wait 2s to show error
                     }
                 } else {
                     // Fallback for testing in a normal browser
                     console.log('Not in LIFF client or API not available. Would close window now.');
-                    alert('This button sends a message and closes the app.');
+                    statusMessage.textContent = 'This button only works inside the LINE app.';
                 }
             });
         }
@@ -228,3 +237,4 @@
 
 </body>
 </html>
+
